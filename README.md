@@ -52,8 +52,7 @@ pip install -r requirements.txt
 From the project root:
 
 ```bash
-python -m src.main
-```
+python -m src.main --num-satellites 10 --num-points 500```
 
 ## Outputs
 Running the pipeline generates:
