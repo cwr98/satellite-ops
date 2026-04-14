@@ -8,15 +8,20 @@ __pycache__/
 .venv/
 env/
 
-# Data (ignore generated data)
-data/raw/*
+# Generated data
 data/processed/*
-outputs/*
-!outputs/.gitkeep
+outputs/reports/*
+outputs/figures/*
 
-# OS files
+# Keep placeholder files
+!data/processed/.gitkeep
+!outputs/reports/.gitkeep
+!outputs/figures/.gitkeep
+
+# Example outputs you want visible in repo
+!outputs/figures/example_plot.png
+
+# OS / editor
 .DS_Store
 Thumbs.db
-
-# VS Code
 .vscode/

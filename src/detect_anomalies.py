@@ -19,6 +19,8 @@ def detect_anomalies(df: pd.DataFrame) -> pd.DataFrame:
     working["battery_diff"] = working.groupby("satellite_id")["battery_level"].diff()
     working["signal_diff"] = working.groupby("satellite_id")["signal_strength"].diff()
     working["temp_diff"] = working.groupby("satellite_id")["temperature"].diff()
+    working["temp_mean"] = working.groupby("satellite_id")["temperature"].transform(lambda x: x.rolling(10).mean())
+    working["temp_std"] = working.groupby("satellite_id")["temperature"].transform(lambda x: x.rolling(10).std())
 
     anomaly_rows = []
 
@@ -39,6 +41,18 @@ def detect_anomalies(df: pd.DataFrame) -> pd.DataFrame:
 
         if pd.notna(row["signal_diff"]) and row["signal_diff"] < DROP_THRESHOLD:
             anomaly_types.append("sudden_signal_drop")
+        pd.notna(row["temp_std"])
+            
+        if (
+            pd.notna(row["temp_mean"])
+            and pd.notna(row["temp_std"])
+            and row["temp_std"] > 0
+            and abs(row["temperature"] - row["temp_mean"]) > 2 * row["temp_std"]
+            ):
+            
+            print("stat anomaly found", row["satellite_id"], row["timestamp"])
+
+            anomaly_types.append("statistical_temp_anomaly")
 
         if anomaly_types:
             anomaly_rows.append(
@@ -53,5 +67,4 @@ def detect_anomalies(df: pd.DataFrame) -> pd.DataFrame:
                     "anomaly_type": ", ".join(anomaly_types),
                 }
             )
-
     return pd.DataFrame(anomaly_rows)
