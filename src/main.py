@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import pandas as pd
+import argparse
 
 from src.simulate_data import generate_telemetry, save_telemetry
 from src.detect_anomalies import detect_anomalies
@@ -15,9 +16,19 @@ ANOMALY_REPORT_PATH = PROJECT_ROOT / "outputs" / "reports" / "anomalies.csv"
 METRICS_PATH = PROJECT_ROOT / "outputs" / "reports" / "metrics.json"
 FIGURES_DIR = PROJECT_ROOT / "outputs" / "figures"
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Satellite telemetry monitoring system")
+
+    parser.add_argument("--num-satellites", type=int, default=5, help="Number of satellites")
+    parser.add_argument("--num-points", type=int, default=300, help="Number of time points")
+
+    return parser.parse_args()
 
 def main() -> None:
-    telemetry_df = generate_telemetry(num_satellites=5, num_points=300)
+    args = parse_args()
+    telemetry_df = generate_telemetry(
+        num_satellites=args.num_satellites, 
+        num_points=args.num_points)
     save_telemetry(telemetry_df, DATA_PATH)
 
     anomalies_df = detect_anomalies(telemetry_df)
